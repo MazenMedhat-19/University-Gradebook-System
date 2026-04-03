@@ -1,0 +1,23 @@
+# University Gradebook System 🎓
+
+A Java-based desktop application designed for managing university student grades, course setups, and automated reporting. Featuring a simple and interactive Graphical User Interface (GUI) built with Java Swing.
+
+## Features 🚀
+* **Student Registration:** Add new students to the system with unique tracking IDs.
+* **Dynamic Course Setup:** Administrators can rename and configure up to 5 concurrent courses.
+* **Grade Management:** Interactive grade entry system with built-in validation (0-100 scale).
+* **Automated Reporting:** * Generate detailed individual student reports (including letter grades and average scores).
+  * Generate department-wide summaries calculating class averages for each course.
+* **Interactive UI:** Fully operated through intuitive GUI dialogue boxes instead of a traditional console.
+
+## Technologies & Concepts Used 💻
+* Java (Standard Edition)
+* Java Swing (`javax.swing.JOptionPane`)
+* Structured Programming
+* Multi-dimensional and Parallel Arrays
+
+## How to Run 🛠️
+1. Clone this repository to your local machine.
+2. Ensure you have the Java Development Kit (JDK) installed.
+3. Compile the `UniversityGradebook.java` file.
+4. Run the compiled class to launch the application menu.
