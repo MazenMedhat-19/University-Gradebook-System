@@ -1,0 +1,273 @@
+import javax.swing.JOptionPane;
+
+class UniversityGradebook {
+
+    // --- 1. Data Structures ---
+    static final int MAX_STUDENTS = 100;
+    static final int MAX_COURSES = 5;
+
+    // Parallel Arrays
+    static int[] studentIDs = new int[MAX_STUDENTS];
+    static String[] studentNames = new String[MAX_STUDENTS];
+    static String[] courseNames = new String[MAX_COURSES];
+    static double[][] gradeBook = new double[MAX_STUDENTS][MAX_COURSES];
+
+    public static void main(String[] args) {
+        initializeSystem(); 
+
+        // --- Main Menu Loop ---
+        boolean running = true;
+        while (running) {
+            String menu = "University Gradebook System\n"
+                    + "Developed by: Team 1 (Mazen)\n"
+                    + "--------------------------------------------------\n"
+                    + "1. Register Student\n"
+                    + "2. Course Setup (Admin)\n"
+                    + "3. Enter Grades\n"
+                    + "4. Student Report\n"
+                    + "5. Department Summary\n"
+                    + "6. Exit\n\n"
+                    + "Enter your choice:";
+
+            String input = JOptionPane.showInputDialog(null, menu);
+
+            if (input == null) break; // Handle cancel button
+
+            switch (input) {
+                case "1": registerStudent(); break;
+                case "2": setupCourses(); break;
+                case "3": enterGrade(); break;
+                case "4": generateStudentReport(); break;
+                case "5": generateDepartmentSummary(); break;
+                case "6":
+                    running = false;
+                    // Final Exit Message with Team Names
+                    JOptionPane.showMessageDialog(null, 
+                        "Project Team:\n" +
+                        "1. Mazen Medhat \n" +
+                
+                        "Thank you!");
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    // --- Initialize System ---
+    public static void initializeSystem() {
+        for (int i = 0; i < MAX_STUDENTS; i++) {
+            studentIDs[i] = 0; // 0 indicates empty slot
+            for (int j = 0; j < MAX_COURSES; j++) {
+                gradeBook[i][j] = -1.0; // -1.0 indicates 'Not Graded'
+            }
+        }
+        // Set default course names
+        for(int k=0; k<MAX_COURSES; k++) {
+            courseNames[k] = "Course " + k;
+        }
+    }
+
+    // --- 1. Student Registration ---
+    public static void registerStudent() {
+        try {
+            String idStr = JOptionPane.showInputDialog("Enter new Student ID (Integer):");
+            if (idStr == null) return;
+            int newID = Integer.parseInt(idStr);
+
+            // Check if ID already exists
+            for (int i = 0; i < MAX_STUDENTS; i++) {
+                if (studentIDs[i] == newID) {
+                    JOptionPane.showMessageDialog(null, "Error: Student ID already exists.");
+                    return;
+                }
+            }
+
+            String newName = JOptionPane.showInputDialog("Enter Student Name:");
+            if (newName == null) return;
+
+            // Find first empty index
+            int emptyIndex = -1;
+            for (int i = 0; i < MAX_STUDENTS; i++) {
+                if (studentIDs[i] == 0) { 
+                    emptyIndex = i;
+                    break;
+                }
+            }
+
+            if (emptyIndex != -1) {
+                studentIDs[emptyIndex] = newID;
+                studentNames[emptyIndex] = newName;
+                JOptionPane.showMessageDialog(null, "Student Registered Successfully at index " + emptyIndex);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error: System is full (Max " + MAX_STUDENTS + " students).");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Invalid ID format.");
+        }
+    }
+
+    // --- 2. Course Setup ---
+    public static void setupCourses() {
+        String currentCourses ="Current Courses:\n";
+        for (int i = 0; i < MAX_COURSES; i++) {
+            currentCourses = currentCourses + i + ". " + courseNames[i] + "\n";
+        }
+
+        String inputIndex = JOptionPane.showInputDialog(currentCourses + "\nEnter course index (0-4) to rename:");
+        if (inputIndex == null) return;
+
+        try {
+            // Using parseInt is cleaner here since showInputDialog returns a String
+            int index = Integer.parseInt(inputIndex); 
+            
+            if (index >= 0 && index < MAX_COURSES) {
+                String newTitle = JOptionPane.showInputDialog("Enter new name for course " + index + ":");
+                
+                if (newTitle != null && newTitle.trim().length() > 0) {
+                     courseNames[index] = newTitle;
+                     JOptionPane.showMessageDialog(null, "Course updated.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid index.");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Invalid number.");
+        }
+    }
+
+    // --- 3. Grade Entry ---
+    public static void enterGrade() {
+        String idStr = JOptionPane.showInputDialog("Enter Student ID to grade:");
+        if (idStr == null) return;
+
+        try {
+            int targetID = Integer.parseInt(idStr);
+            int studentIndex = -1;
+
+            // Search for Student
+            for (int i = 0; i < MAX_STUDENTS; i++) {
+                if (studentIDs[i] == targetID) {
+                    studentIndex = i;
+                    break;
+                }
+            }
+
+            if (studentIndex == -1) {
+                JOptionPane.showMessageDialog(null, "Student ID not found.");
+                return;
+            }
+
+            // Select Course
+            StringBuilder courseList = new StringBuilder("Select Course Index:\n");
+            for (int j = 0; j < MAX_COURSES; j++) {
+                courseList.append(j).append(": ").append(courseNames[j]).append("\n");
+            }
+
+            String courseStr = JOptionPane.showInputDialog(courseList.toString());
+            if (courseStr == null) return;
+            int courseIndex = Integer.parseInt(courseStr);
+
+            if (courseIndex >= 0 && courseIndex < MAX_COURSES) {
+                String scoreStr = JOptionPane.showInputDialog("Enter Score (0-100):");
+                double score = Double.parseDouble(scoreStr);
+                
+                if(score >= 0 && score <= 100) {
+                    gradeBook[studentIndex][courseIndex] = score;
+                    JOptionPane.showMessageDialog(null, "Grade saved.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error: Grade must be between 0-100.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid Course Index.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Invalid input.");
+        }
+    }
+
+    // --- 4. Student Report ---
+    public static void generateStudentReport() {
+        String idStr = JOptionPane.showInputDialog("Enter Student ID for Report:");
+        if (idStr == null) return;
+
+        try {
+            int id = Integer.parseInt(idStr);
+            int index = -1;
+
+            // Search Logic (Fixed)
+            for (int i = 0; i < MAX_STUDENTS; i++) {
+                 if (studentIDs[i] == id) {
+                     index = i;
+                     break;
+                 }
+            }
+
+            if (index == -1) {
+                JOptionPane.showMessageDialog(null, "Student NOT found!");
+                return;
+            }
+
+            String report = "=== Student Report ===\n";
+            report += "Name: " + studentNames[index] + "\n";
+            report += "ID:   " + studentIDs[index] + "\n";
+            report += "--------------------------------\n";
+
+            double total = 0;
+            int count = 0;
+
+            for (int j = 0; j < MAX_COURSES; j++) {
+                double grade = gradeBook[index][j];
+                report += courseNames[j] + ": ";
+
+                if (grade == -1.0) {
+                    report += "Not Graded\n";
+                } else {
+                    String gradeStatus;
+                    if (grade >= 85) gradeStatus = " (Excellent)";
+                    else if (grade >= 75) gradeStatus = " (Very Good)";
+                    else if (grade >= 65) gradeStatus = " (Good)";
+                    else if (grade >= 50) gradeStatus = " (Pass)";
+                    else gradeStatus = " (Fail)";
+
+                    report += grade + gradeStatus + "\n";
+                    total += grade;
+                    count++;
+                }
+            }
+
+            report += "--------------------------------\n";
+            double avg = (count > 0) ? (total / count) : 0.0;
+            report += "Average Score: " + String.format("%.2f", avg);
+
+            JOptionPane.showMessageDialog(null, report);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Invalid ID.");
+        }
+    }
+
+    // --- 5. Department Summary ---
+    public static void generateDepartmentSummary() {
+        String summary ="Department Summary (Class Averages):\n\n";
+
+        for (int j = 0; j < MAX_COURSES; j++) {
+            double courseSum = 0;
+            int courseCount = 0;
+
+            for (int i = 0; i < MAX_STUDENTS; i++) {
+                // Only count registered students who have a valid grade
+                if (studentIDs[i] != 0 && gradeBook[i][j] != -1.0) {
+                    courseSum += gradeBook[i][j];
+                    courseCount++;
+                }
+            }
+
+            double avg= (courseCount > 0) ? (courseSum / courseCount) : 0.0;
+            summary += courseNames[j] + ": " + String.format("%.2f", avg) + "\n";
+        }
+
+        JOptionPane.showMessageDialog(null, summary);
+    }
+}
